@@ -39,7 +39,18 @@ export default function ViewsLayout({ children }: { children: React.ReactNode })
   const [openDrawer, setOpenDrawer] = React.useState(false);
   const { title } = useNavigationPanel();
 
-  const [connectionAnchor, setConnectionAnchor] = React.useState<null | HTMLElement>(null);
+React.useEffect(() => {
+    if (!supabase) return;
+
+  // Auto-connect PowerSync once Supabase is available
+    powerSync.connect(supabase);
+
+    return () => {
+      powerSync.disconnect();
+    };
+  }, [powerSync, supabase]);
+
+  //const [connectionAnchor, setConnectionAnchor] = React.useState<null | HTMLElement>(null);
 
   const NAVIGATION_ITEMS = React.useMemo(
     () => [
@@ -84,14 +95,18 @@ export default function ViewsLayout({ children }: { children: React.ReactNode })
           </Box>
           <NorthIcon sx={{ marginRight: '-10px' }} color={status?.dataFlowStatus.uploading ? 'primary' : 'inherit'} />
           <SouthIcon color={status?.dataFlowStatus.downloading ? 'primary' : 'inherit'} />
+          
           <Box
-            sx={{ cursor: 'pointer' }}
-            onClick={(event) => {
-              setConnectionAnchor(event.currentTarget);
-            }}>
+            //sx={{ cursor: 'pointer' }}
+            //onClick={(event) => {
+              //setConnectionAnchor(event.currentTarget);
+            //}}
+            >
             {status?.connected ? <WifiIcon /> : <SignalWifiOffIcon />}
-          </Box>
+          </Box> 
+          
           {/* Allows for manual connection and disconnect for testing purposes */}
+          {/*
           <Menu
             id="connection-menu"
             anchorEl={connectionAnchor}
@@ -115,6 +130,7 @@ export default function ViewsLayout({ children }: { children: React.ReactNode })
               </MenuItem>
             ) : null}
           </Menu>
+          */}
         </Toolbar>
       </S.TopBar>
       <Drawer anchor={'left'} open={openDrawer} onClose={() => setOpenDrawer(false)}>
