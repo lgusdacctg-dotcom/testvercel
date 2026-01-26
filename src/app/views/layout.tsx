@@ -41,42 +41,33 @@ export default function ViewsLayout({ children }: { children: React.ReactNode })
 
 React.useEffect(() => {
   if (!supabase) return;
-
-  let unsubscribe: (() => void) | undefined;
-
-  const init = async () => {
-    const {
-      data: { session }
-    } = await supabase.client.auth.getSession();
-
+  
+  // Check if user is authenticated before connecting
+  const initConnection = async () => {
+    const { data: { session } } = await supabase.client.auth.getSession();
     if (session) {
-      // 👇 GUARD GOES HERE
-      if (!status?.connected && !status?.connecting) {
+      powerSync.connect(supabase);
+    }
+  };
+  
+  initConnection();
+  
+  // Also listen for auth state changes
+  const { data: { subscription } } = supabase.client.auth.onAuthStateChange(
+    (event, session) => {
+      if (session) {
         powerSync.connect(supabase);
+      } else {
+        powerSync.disconnectAndClear();
       }
     }
-
-    unsubscribe = supabase.client.auth
-      .onAuthStateChange(async (_event, session) => {
-        if (session) {
-          // 👇 GUARD GOES HERE TOO
-          if (!status?.connected && !status?.connecting) {
-            powerSync.connect(supabase);
-          }
-        } else {
-          await powerSync.disconnectAndClear();
-        }
-      })
-      .data.subscription.unsubscribe;
-  };
-
-  init();
-
+  );
+  
   return () => {
-    unsubscribe?.();
+    subscription.unsubscribe();
     powerSync.disconnect();
   };
-}, [powerSync, supabase, status?.connected, status?.connecting]);
+}, [powerSync, supabase]);
 
 
   //const [connectionAnchor, setConnectionAnchor] = React.useState<null | HTMLElement>(null);
@@ -202,4 +193,5 @@ namespace S {
     padding: 20px;
   `;
 }
+
 
