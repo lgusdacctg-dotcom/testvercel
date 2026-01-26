@@ -40,10 +40,11 @@ export default function ViewsLayout({ children }: { children: React.ReactNode })
   const { title } = useNavigationPanel();
 
 React.useEffect(() => {
-    if (supabase && !status?.connected && !status?.connecting) {
-      powerSync.connect(supabase);
-    }
-  }, [supabase, status?.connected, status?.connecting, powerSync]);
+  if (supabase) {
+    console.log('Supabase available, connecting...');
+    powerSync.connect(supabase);
+  }
+}, [supabase]); // Remove status dependencies
 
 
 
@@ -170,6 +171,7 @@ namespace S {
     padding: 20px;
   `;
 }
+
 
 
 
