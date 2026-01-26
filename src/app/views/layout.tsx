@@ -47,7 +47,7 @@ React.useEffect(() => {
 
 
 
-  //const [connectionAnchor, setConnectionAnchor] = React.useState<null | HTMLElement>(null);
+  const [connectionAnchor, setConnectionAnchor] = React.useState<null | HTMLElement>(null);
 
   const NAVIGATION_ITEMS = React.useMemo(
     () => [
@@ -94,16 +94,16 @@ React.useEffect(() => {
           <SouthIcon color={status?.dataFlowStatus.downloading ? 'primary' : 'inherit'} />
           
           <Box
-            //sx={{ cursor: 'pointer' }}
-            //onClick={(event) => {
-              //setConnectionAnchor(event.currentTarget);
-            //}}
+            sx={{ cursor: 'pointer' }}
+            onClick={(event) => {
+              setConnectionAnchor(event.currentTarget);
+            }}
             >
             {status?.connected ? <WifiIcon /> : <SignalWifiOffIcon />}
           </Box> 
           
           {/* Allows for manual connection and disconnect for testing purposes */}
-          {/*
+          {
           <Menu
             id="connection-menu"
             anchorEl={connectionAnchor}
@@ -127,7 +127,7 @@ React.useEffect(() => {
               </MenuItem>
             ) : null}
           </Menu>
-          */}
+          }
         </Toolbar>
       </S.TopBar>
       <Drawer anchor={'left'} open={openDrawer} onClose={() => setOpenDrawer(false)}>
@@ -170,6 +170,7 @@ namespace S {
     padding: 20px;
   `;
 }
+
 
 
 
