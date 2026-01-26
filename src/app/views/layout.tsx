@@ -40,34 +40,11 @@ export default function ViewsLayout({ children }: { children: React.ReactNode })
   const { title } = useNavigationPanel();
 
 React.useEffect(() => {
-  if (!supabase) return;
-  
-  // Check if user is authenticated before connecting
-  const initConnection = async () => {
-    const { data: { session } } = await supabase.client.auth.getSession();
-    if (session) {
+    if (supabase && !status?.connected && !status?.connecting) {
       powerSync.connect(supabase);
     }
-  };
-  
-  initConnection();
-  
-  // Also listen for auth state changes
-  const { data: { subscription } } = supabase.client.auth.onAuthStateChange(
-    (event, session) => {
-      if (session) {
-        powerSync.connect(supabase);
-      } else {
-        powerSync.disconnectAndClear();
-      }
-    }
-  );
-  
-  return () => {
-    subscription.unsubscribe();
-    powerSync.disconnect();
-  };
-}, [powerSync, supabase]);
+  }, [supabase, status?.connected, status?.connecting, powerSync]);
+
 
 
   //const [connectionAnchor, setConnectionAnchor] = React.useState<null | HTMLElement>(null);
@@ -193,5 +170,6 @@ namespace S {
     padding: 20px;
   `;
 }
+
 
 
