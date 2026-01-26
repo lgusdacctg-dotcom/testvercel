@@ -20,13 +20,16 @@ export default function LoginPage() {
         navigate(DEFAULT_ENTRY_ROUTE);
       }}
       secondaryActions={[
+        /*
         {
           title: 'Register',
           onClick: () => {
             navigate('/auth/register');
           }
         }
+        */
       ]}
     />
   );
 }
+
