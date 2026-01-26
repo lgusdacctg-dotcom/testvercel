@@ -40,15 +40,44 @@ export default function ViewsLayout({ children }: { children: React.ReactNode })
   const { title } = useNavigationPanel();
 
 React.useEffect(() => {
-    if (!supabase) return;
+  if (!supabase) return;
 
-  // Auto-connect PowerSync once Supabase is available
-    powerSync.connect(supabase);
+  let unsubscribe: (() => void) | undefined;
 
-    return () => {
-      powerSync.disconnect();
-    };
-  }, [powerSync, supabase]);
+  const init = async () => {
+    const {
+      data: { session }
+    } = await supabase.client.auth.getSession();
+
+    if (session) {
+      // 👇 GUARD GOES HERE
+      if (!status?.connected && !status?.connecting) {
+        powerSync.connect(supabase);
+      }
+    }
+
+    unsubscribe = supabase.client.auth
+      .onAuthStateChange(async (_event, session) => {
+        if (session) {
+          // 👇 GUARD GOES HERE TOO
+          if (!status?.connected && !status?.connecting) {
+            powerSync.connect(supabase);
+          }
+        } else {
+          await powerSync.disconnectAndClear();
+        }
+      })
+      .data.subscription.unsubscribe;
+  };
+
+  init();
+
+  return () => {
+    unsubscribe?.();
+    powerSync.disconnect();
+  };
+}, [powerSync, supabase, status?.connected, status?.connecting]);
+
 
   //const [connectionAnchor, setConnectionAnchor] = React.useState<null | HTMLElement>(null);
 
@@ -173,3 +202,4 @@ namespace S {
     padding: 20px;
   `;
 }
+
