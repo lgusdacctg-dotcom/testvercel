@@ -25,8 +25,7 @@ export const LoginDetailsWidget: React.FC<LoginDetailsWidgetProps> = (props) => 
       <S.LoginContainer elevation={1}>
         <S.LoginHeader variant="h4">{props.title}</S.LoginHeader>
         <S.LogoBox>
-          <S.Logo alt="PowerSync Logo" width={400} height={100} src="/powersync-logo.svg" />
-          <S.Logo alt="Supabase Logo" width={300} height={80} src="/supabase-logo.png" />
+          <S.Logo alt="Sapang Dalaga Logo" width={400} height={100} src="/logo.png" />
         </S.LogoBox>
         <Formik<LoginDetailsFormValues>
           initialValues={{ email: '', password: '' }}
@@ -164,3 +163,4 @@ namespace S {
     margin-bottom: 20px;
   `;
 }
+
